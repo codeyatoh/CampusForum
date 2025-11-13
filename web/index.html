@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="campusforum">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>campusforum</title>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    // Function to check if message should be suppressed
+    function shouldSuppress(message) {
+      if (!message) return false;
+      const msg = message.toString().toLowerCase();
+      return msg.includes('ext.flutter.connectedvmserviceuri') ||
+             msg.includes('ext.flutter.activedevtoolsserveraddress') ||
+             msg.includes('failed to set vm service uri') ||
+             msg.includes('failed to set devtools server address') ||
+             msg.includes('deep links to devtools') ||
+             msg.includes('dwds error') ||
+             msg.includes('unknown method') ||
+             msg.includes('(-32601)') ||
+             msg.includes('unexpected null value') ||
+             msg.includes('unexpected error from chrome devtools');
+    }
+
+    // Suppress DevTools-related console errors
+    window.addEventListener('error', function(e) {
+      if (e.message && shouldSuppress(e.message)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }, true);
+
+    // Suppress unhandled promise rejections related to DevTools
+    window.addEventListener('unhandledrejection', function(e) {
+      if (e.reason && shouldSuppress(e.reason.toString())) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }, true);
+
+    // Override console methods to filter DevTools warnings
+    const originalConsoleError = console.error;
+    const originalConsoleWarn = console.warn;
+    const originalConsoleLog = console.log;
+
+    console.error = function(...args) {
+      const message = args.join(' ');
+      if (shouldSuppress(message)) {
+        return; // Suppress these messages
+      }
+      originalConsoleError.apply(console, args);
+    };
+
+    console.warn = function(...args) {
+      const message = args.join(' ');
+      if (shouldSuppress(message)) {
+        return; // Suppress these messages
+      }
+      originalConsoleWarn.apply(console, args);
+    };
+
+    console.log = function(...args) {
+      const message = args.join(' ');
+      if (shouldSuppress(message)) {
+        return; // Suppress these messages
+      }
+      originalConsoleLog.apply(console, args);
+    };
+  </script>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
