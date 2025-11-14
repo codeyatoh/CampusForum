@@ -1,166 +1,93 @@
 # CampusForum System Overview
 
+A simple guide explaining how the CampusForum app works, how files are organized, and how everything connects together.
+
 ## 📋 Table of Contents
-1. [System Description](#system-description)
-2. [Architecture Overview](#architecture-overview)
-3. [Component Structure](#component-structure)
-4. [Page Structure](#page-structure)
-5. [State Management](#state-management)
-6. [Routing System](#routing-system)
-7. [Data Flow](#data-flow)
-8. [Technologies & Libraries](#technologies--libraries)
-9. [Performance Optimization](#performance-optimization)
-10. [Future Improvements](#future-improvements)
 
-## 🎯 System Description
+1. [What the App Does](#what-the-app-does)
+2. [How Files Are Organized](#how-files-are-organized)
+3. [How Pages Work](#how-pages-work)
+4. [How Components Work](#how-components-work)
+5. [How Navigation Works](#how-navigation-works)
+6. [How State Management Works](#how-state-management-works)
+7. [How Data Flows](#how-data-flows)
+8. [Technologies Used](#technologies-used)
 
-**CampusForum** is a cross-platform campus community forum application that enables students to:
-- Create and participate in discussion threads
-- Join and manage community spaces (interest-based groups)
-- Share content with media attachments (photos/videos)
-- Receive notifications about activities
-- Manage profiles and preferences
-- Navigate through categorized content
+## 🎯 What the App Does
 
-The application is built using **Flutter** and follows a component-based architecture with declarative routing and provider-based state management. It supports multiple platforms (Android, iOS, Web, Windows, macOS, Linux) with a responsive design that adapts to different screen sizes.
+CampusForum is a campus community app where students can:
+- **Post and discuss** - Create threads and comment on them
+- **Join communities** - Create or join spaces (like Computer Science, Study Groups)
+- **Share media** - Upload photos and videos
+- **Get notifications** - See alerts about activities
+- **Manage profiles** - Edit settings and view activity
 
-## 🏗️ Architecture Overview
+The app works on phones, tablets, and web browsers.
 
-The application follows a **layered architecture** pattern:
+## 📁 How Files Are Organized
+
+### Main Folders
 
 ```
-┌─────────────────────────────────────────┐
-│         Presentation Layer              │
-│  (Pages, Components, UI Widgets)         │
-└─────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────┐
-│         State Management Layer           │
-│  (Providers, Contexts, State)           │
-└─────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────┐
-│         Routing Layer                    │
-│  (go_router, Navigation)                  │
-└─────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────┐
-│         Data Layer                       │
-│  (SharedPreferences, Local Storage)      │
-└─────────────────────────────────────────┘
+lib/                          # All your app code goes here
+├── main.dart                 # App starts here - initializes everything
+├── app.dart                  # Sets up the app (theme, router)
+├── app_router.dart           # Defines all navigation routes
+│
+├── components/               # Reusable UI pieces
+│   ├── thread_card.dart      # Shows a post preview card
+│   ├── space_card.dart       # Shows a community card
+│   ├── quick_post_composer.dart  # Form to create posts
+│   ├── bottom_navigation.dart    # Bottom menu bar
+│   ├── comment_card.dart     # Shows a comment
+│   └── ...                   # More reusable pieces
+│
+├── pages/                    # Full screens
+│   ├── splash_page.dart      # Welcome screen
+│   ├── login_page.dart       # Login screen
+│   ├── home_page.dart        # Main feed with posts
+│   ├── spaces_page.dart      # Browse communities
+│   ├── profile_page.dart     # Your profile
+│   ├── thread_page.dart      # View a single post
+│   └── ...                   # More screens
+│
+├── contexts/                 # State management
+│   └── dark_mode_context.dart  # Manages dark/light mode
+│
+└── theme/                    # App styling
+    └── app_theme.dart        # Colors, fonts, sizes
 ```
 
-### Key Principles
-- **Separation of Concerns**: UI, state, and routing are separated
-- **Reusability**: Components are designed to be reusable across pages
-- **Single Source of Truth**: State is managed centrally through providers
-- **Declarative Routing**: Routes are defined declaratively using go_router
+### What Each Folder Does
 
-## 📦 Component Structure
+**`lib/components/`** - Reusable pieces
+- These are like building blocks you use multiple times
+- Example: `ThreadCard` is used on Home page, Spaces page, etc.
+- Makes code cleaner and easier to maintain
 
-### Location: `lib/components/`
+**`lib/pages/`** - Full screens
+- Each file is one complete screen
+- Example: `home_page.dart` = the entire home screen
+- Pages use components to build the UI
 
-Components are reusable UI widgets that encapsulate specific functionality and can be used across multiple pages.
+**`lib/contexts/`** - App-wide settings
+- Stores data that multiple pages need
+- Example: Dark mode preference (used everywhere)
+- Uses Provider pattern to share data
 
-#### Core Components
+**`lib/theme/`** - Looks and styling
+- Defines colors, fonts, sizes
+- Makes the app look consistent
+- Easy to change the whole app's appearance
 
-**Navigation Components:**
-- `bottom_navigation.dart`: Bottom navigation bar with Home, Spaces, Alerts, Profile tabs
-- `category_chips.dart`: Category filter chips for content filtering
+## 📄 How Pages Work
 
-**Content Components:**
-- `thread_card.dart`: Displays thread/post preview with author, content, interactions
-- `comment_card.dart`: Displays individual comments in thread discussions
-- `space_card.dart`: Displays space/community preview cards
-- `quick_post_composer.dart`: Expandable post creation form with media support
+### What is a Page?
 
-**Input Components:**
-- `comment_input.dart`: Comment input field with submit functionality
-- `password_input.dart`: Secure password input with visibility toggle
-- `category_chips.dart`: Interactive category selection chips
+A page is a full screen in the app. Each page file creates one screen.
 
-**Modal Components:**
-- `search_modal.dart`: Search overlay for finding content
-- `filter_modal.dart`: Filter options modal
-- `settings_modal.dart`: Settings configuration modal
-- `create_space_modal.dart`: Space creation form
-- `edit_space_modal.dart`: Space editing form
-- `edit_post_modal.dart`: Post editing form
-- `delete_space_modal.dart`: Space deletion confirmation
-- `sign_up_modal.dart`: User registration modal
-- `forgot_password_modal.dart`: Password recovery modal
-- `spaces_list_modal.dart`: List of available spaces
+### Page Structure
 
-### Component Design Patterns
-
-**Stateful vs Stateless:**
-- Most components are `StatelessWidget` for performance
-- Components with internal state (e.g., `QuickPostComposer`) use `StatefulWidget`
-- State is lifted to parent pages when needed for sharing
-
-**Props/Parameters:**
-- Components receive data via constructor parameters
-- Callback functions (`onSubmit`, `onTap`, etc.) handle user interactions
-- Optional parameters provide flexibility (e.g., `isSmallScreen` for responsive design)
-
-**Example Component Structure:**
-```dart
-class ThreadCard extends StatelessWidget {
-  final Map<String, dynamic> thread;
-  final VoidCallback? onTap;
-  final bool isSmallScreen;
-  
-  const ThreadCard({
-    required this.thread,
-    this.onTap,
-    this.isSmallScreen = false,
-  });
-  
-  @override
-  Widget build(BuildContext context) {
-    // Component implementation
-  }
-}
-```
-
-## 📄 Page Structure
-
-### Location: `lib/pages/`
-
-Pages represent full-screen views and are the main entry points for navigation.
-
-#### Authentication Pages
-- `splash_page.dart`: Initial splash screen with app branding
-- `login_page.dart`: User login interface
-- `sign_up_page.dart`: User registration interface
-- `onboarding_page.dart`: First-time user introduction
-
-#### Main Application Pages
-- `home_page.dart`: Main feed with threads, categories, and post creation
-- `spaces_page.dart`: Browse and discover community spaces
-- `profile_page.dart`: Current user's profile and activity
-- `notifications_page.dart`: User notifications and alerts
-- `following_page.dart`: Content from followed users/spaces
-
-#### Detail Pages
-- `thread_page.dart`: Full thread view with comments and interactions
-- `user_profile_page.dart`: View other users' profiles
-- `space_profile_page.dart`: View space details and posts
-- `settings_page.dart`: User settings and preferences
-
-### Page Design Patterns
-
-**State Management:**
-- Pages use `StatefulWidget` for local state (UI state, form data)
-- Global state (theme, user preferences) accessed via `Provider`
-- Pages subscribe to providers using `Provider.of<ProviderType>(context)`
-
-**Navigation:**
-- Pages use `go_router` for navigation: `context.push()`, `context.go()`, `context.pop()`
-- Back button handling with `context.canPop()` checks
-- Route parameters accessed via `state.pathParameters`
-
-**Layout Structure:**
 ```dart
 class HomePage extends StatefulWidget {
   @override
@@ -168,16 +95,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Local state
-  String _selectedCategory = 'All';
+  // Local data for this page
+  String selectedCategory = 'All';
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(...),
+      appBar: AppBar(title: Text('Home')),
       body: Column(
         children: [
-          // Page content
+          // Page content here
+          // Uses components to build UI
         ],
       ),
       bottomNavigationBar: BottomNavigation(...),
@@ -186,84 +114,128 @@ class _HomePageState extends State<HomePage> {
 }
 ```
 
-## 🔄 State Management
+### Types of Pages
 
-### Provider Pattern
+**Authentication Pages:**
+- `splash_page.dart` - Shows when app starts
+- `login_page.dart` - User login
+- `sign_up_page.dart` - Create account
+- `onboarding_page.dart` - Tutorial for new users
 
-The application uses **Provider** for state management, following the ChangeNotifier pattern.
+**Main Pages:**
+- `home_page.dart` - Main feed with all posts
+- `spaces_page.dart` - Browse communities
+- `profile_page.dart` - Your profile
+- `notifications_page.dart` - Alerts and notifications
+- `following_page.dart` - Posts from people you follow
 
-#### Current Providers
+**Detail Pages:**
+- `thread_page.dart` - View one post with comments
+- `user_profile_page.dart` - View someone else's profile
+- `space_profile_page.dart` - View a community's page
+- `settings_page.dart` - App settings
 
-**DarkModeProvider** (`lib/contexts/dark_mode_context.dart`):
-- Manages dark/light theme preference
-- Persists preference using `SharedPreferences`
-- Notifies listeners when theme changes
-- Initialized in `main.dart` before app starts
+### How Pages Connect
+
+Pages don't directly know about each other. They use the router to navigate:
 
 ```dart
-class DarkModeProvider extends ChangeNotifier {
-  bool _isDarkMode = false;
+// From home_page.dart, go to a thread
+context.push('/thread/123');
+
+// The router finds thread_page.dart and shows it
+```
+
+## 🧩 How Components Work
+
+### What is a Component?
+
+Components are reusable UI pieces. Think of them like LEGO blocks - you use the same block in different places.
+
+### Example: ThreadCard Component
+
+```dart
+// This component shows a post preview
+class ThreadCard extends StatelessWidget {
+  final Map<String, dynamic> thread;  // Data to display
+  final VoidCallback? onTap;            // What happens when clicked
   
-  bool get isDarkMode => _isDarkMode;
+  const ThreadCard({
+    required this.thread,
+    this.onTap,
+  });
   
-  Future<void> toggleDarkMode() async {
-    _isDarkMode = !_isDarkMode;
-    await SharedPreferences.getInstance()
-        .then((prefs) => prefs.setBool('darkMode', _isDarkMode));
-    notifyListeners();
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        title: Text(thread['title']),
+        subtitle: Text(thread['author']),
+        onTap: onTap,  // Call the function when tapped
+      ),
+    );
   }
 }
 ```
 
-#### Provider Usage
+### How Pages Use Components
 
-**Accessing State:**
 ```dart
-final darkMode = Provider.of<DarkModeProvider>(context);
-bool isDark = darkMode.isDarkMode;
-```
-
-**Listening to Changes:**
-```dart
-Consumer<DarkModeProvider>(
-  builder: (context, darkMode, child) {
-    return Text(darkMode.isDarkMode ? 'Dark' : 'Light');
+// In home_page.dart
+ListView.builder(
+  itemCount: threads.length,
+  itemBuilder: (context, index) {
+    return ThreadCard(
+      thread: threads[index],
+      onTap: () {
+        // Navigate to thread page
+        context.push('/thread/${threads[index]['id']}');
+      },
+    );
   },
 )
 ```
 
-#### State Flow
+### Common Components
 
-1. **Initialization**: Provider initialized in `main.dart`
-2. **Access**: Pages/components access state via `Provider.of()`
-3. **Updates**: State changes trigger `notifyListeners()`
-4. **Re-render**: Widgets listening to provider rebuild automatically
-5. **Persistence**: State saved to `SharedPreferences` for persistence
+**Navigation:**
+- `bottom_navigation.dart` - Bottom menu (Home, Spaces, Profile, etc.)
 
-### Local State
+**Content Display:**
+- `thread_card.dart` - Shows a post preview
+- `space_card.dart` - Shows a community card
+- `comment_card.dart` - Shows a comment
 
-Pages use `StatefulWidget` for:
-- Form inputs (text controllers)
-- UI state (modals, expanded/collapsed states)
-- Temporary data (selected items, filters)
+**Input:**
+- `quick_post_composer.dart` - Form to create posts
+- `comment_input.dart` - Input field for comments
+- `password_input.dart` - Password field with show/hide
 
-## 🧭 Routing System
+**Modals (Pop-ups):**
+- `search_modal.dart` - Search overlay
+- `settings_modal.dart` - Settings popup
+- `create_space_modal.dart` - Create community popup
 
-### go_router Configuration
+## 🧭 How Navigation Works
 
-**Location**: `lib/app_router.dart`
+### The Router
 
-The application uses `go_router` for declarative, type-safe routing.
+All navigation is handled by `app_router.dart`. It's like a map that tells the app which page to show for each URL.
 
-#### Route Definitions
+### Route Definitions
 
 ```dart
+// In app_router.dart
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/splash',
+  initialLocation: '/splash',  // Start here
   routes: [
-    GoRoute(path: '/splash', builder: ...),
-    GoRoute(path: '/', builder: ...),
-    GoRoute(path: '/home', builder: ...),
+    // Simple route - just show a page
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const HomePage(),
+    ),
+    
+    // Route with parameter - like /user/john
     GoRoute(
       path: '/user/:username',
       builder: (context, state) {
@@ -275,269 +247,343 @@ final GoRouter appRouter = GoRouter(
 );
 ```
 
-#### Route Types
+### How to Navigate
 
-**Static Routes:**
-- `/splash`, `/`, `/home`, `/spaces`, `/profile`, etc.
-- Direct mapping to page widgets
-
-**Dynamic Routes:**
-- `/user/:username`: User profile pages
-- `/space/:spaceId`: Space detail pages
-- `/thread/:threadId`: Thread detail pages
-- Parameters extracted from `state.pathParameters`
-
-#### Navigation Methods
-
-**Push (Add to stack):**
+**Go to a new page (can go back):**
 ```dart
-context.push('/user/johndoe');  // Navigate forward, can go back
+context.push('/thread/123');
+// Shows thread_page.dart, can press back button
 ```
 
-**Go (Replace):**
+**Replace current page (can't go back):**
 ```dart
-context.go('/home');  // Replace current route
+context.go('/home');
+// Goes to home, replaces current page
 ```
 
-**Pop (Go back):**
+**Go back:**
 ```dart
 if (context.canPop()) {
   context.pop();  // Go back if possible
 } else {
-  context.go('/home');  // Fallback route
+  context.go('/home');  // Or go to home if can't go back
 }
 ```
 
-#### Navigation Flow
+### Navigation Flow
 
 ```
-Splash → Login → Onboarding → Home
-                              ↓
-                    ┌─────────┴─────────┐
-                    ↓                   ↓
-                Spaces              Profile
-                    ↓                   ↓
-              Space Detail        User Profile
-                    ↓                   ↓
-                Thread Detail     Settings
+App Starts
+    ↓
+Splash Screen (2 seconds)
+    ↓
+Login Page
+    ↓
+Onboarding (first time only)
+    ↓
+Home Page
+    ├──→ Spaces Page
+    │       └──→ Space Detail Page
+    │               └──→ Thread Page
+    │
+    ├──→ Profile Page
+    │       └──→ Settings Page
+    │
+    └──→ Thread Page
+            └──→ User Profile Page
 ```
 
-## 🔀 Data Flow
+## 🔄 How State Management Works
 
-### Data Flow Patterns
+### What is State?
 
-**1. User Interaction → State Update → UI Re-render**
-```
-User taps button
-  → Callback function triggered
-  → State updated (setState or Provider)
-  → Widget rebuilds with new state
-  → UI reflects changes
+State is data that can change. Examples:
+- Is dark mode on or off?
+- What posts are showing?
+- Is a modal open or closed?
+
+### Provider Pattern
+
+We use **Provider** to share state across the app.
+
+### Example: Dark Mode
+
+**1. Create a Provider** (`dark_mode_context.dart`):
+```dart
+class DarkModeProvider extends ChangeNotifier {
+  bool _isDarkMode = false;
+  
+  bool get isDarkMode => _isDarkMode;
+  
+  Future<void> toggleDarkMode() async {
+    _isDarkMode = !_isDarkMode;
+    // Save to device storage
+    await SharedPreferences.getInstance()
+        .then((prefs) => prefs.setBool('darkMode', _isDarkMode));
+    notifyListeners();  // Tell everyone it changed
+  }
+}
 ```
 
-**2. Navigation Flow**
-```
-User navigates
-  → context.push('/route')
-  → go_router resolves route
-  → Page widget built
-  → Page accesses state via Provider
-  → Page renders with data
+**2. Use it in a Page:**
+```dart
+// Get the provider
+final darkMode = Provider.of<DarkModeProvider>(context);
+
+// Use the value
+bool isDark = darkMode.isDarkMode;
+
+// Change it
+darkMode.toggleDarkMode();  // This updates everywhere!
 ```
 
-**3. Theme Changes**
+**3. Listen to Changes:**
+```dart
+Consumer<DarkModeProvider>(
+  builder: (context, darkMode, child) {
+    // This rebuilds automatically when dark mode changes
+    return Text(darkMode.isDarkMode ? 'Dark' : 'Light');
+  },
+)
+```
+
+### Local State vs Global State
+
+**Local State** (only in one page):
+```dart
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String selectedCategory = 'All';  // Only this page knows about this
+  
+  void changeCategory(String cat) {
+    setState(() {
+      selectedCategory = cat;  // Update and rebuild
+    });
+  }
+}
+```
+
+**Global State** (shared across app):
+```dart
+// Dark mode - everyone needs to know
+final darkMode = Provider.of<DarkModeProvider>(context);
+```
+
+## 🔀 How Data Flows
+
+### Simple Flow Example
+
+**User taps a button:**
+```
+1. User taps "Create Post" button
+   ↓
+2. Button's onPressed callback runs
+   ↓
+3. Function opens QuickPostComposer component
+   ↓
+4. User fills form and taps "Post"
+   ↓
+5. onSubmit callback runs
+   ↓
+6. Data is processed (could save to backend)
+   ↓
+7. Page updates to show new post
+```
+
+### Navigation Flow
+
+```
+User taps on a thread card
+   ↓
+ThreadCard's onTap runs
+   ↓
+context.push('/thread/123') called
+   ↓
+Router finds the route
+   ↓
+ThreadPage is created
+   ↓
+ThreadPage loads thread data
+   ↓
+ThreadPage displays the thread
+```
+
+### State Change Flow
+
 ```
 User toggles dark mode
-  → DarkModeProvider.toggleDarkMode()
-  → SharedPreferences updated
-  → notifyListeners() called
-  → App widget rebuilds
-  → Theme applied globally
+   ↓
+Settings page calls darkMode.toggleDarkMode()
+   ↓
+DarkModeProvider updates _isDarkMode
+   ↓
+DarkModeProvider saves to SharedPreferences
+   ↓
+DarkModeProvider calls notifyListeners()
+   ↓
+All widgets using Consumer rebuild
+   ↓
+App theme changes everywhere
 ```
 
-### Data Persistence
+## 🛠️ Technologies Used
 
-**SharedPreferences:**
-- Dark mode preference
-- User settings (future: user data, authentication tokens)
+### Core
+- **Flutter** - The framework (like React for mobile)
+- **Dart** - The programming language
 
-**In-Memory State:**
-- Current page state
-- Form inputs
-- Temporary UI state
-
-## 🛠️ Technologies & Libraries
-
-### Core Framework
-- **Flutter**: Cross-platform UI framework
-- **Dart**: Programming language
-
-### Key Libraries
+### Key Packages
 
 **Navigation:**
-- `go_router` (^13.0.0): Declarative routing with type-safe navigation
+- `go_router` - Handles all page navigation
 
 **State Management:**
-- `provider` (^6.1.1): Dependency injection and state management
+- `provider` - Shares data across the app
 
-**Persistence:**
-- `shared_preferences` (^2.2.2): Key-value storage for preferences
+**Storage:**
+- `shared_preferences` - Saves settings to device
 
 **Media:**
-- `image_picker` (^1.0.7): Image and video selection from device
+- `image_picker` - Lets users pick photos/videos
 
-**UI/UX:**
-- `google_fonts` (^6.1.0): Poppins font family integration
+**UI:**
+- `google_fonts` - Custom fonts (Poppins)
 
 ### Platform Support
-- **Android**: Full support with native Android build
-- **iOS**: Full support with native iOS build
-- **Web**: Limited support (some features like image picker have restrictions)
-- **Windows**: Supported
-- **macOS**: Supported
-- **Linux**: Supported
 
-## ⚡ Performance Optimization
+- ✅ **Android** - Full support
+- ✅ **iOS** - Full support
+- ⚠️ **Web** - Works but some features limited (like image picker)
+- ✅ **Windows** - Supported
+- ✅ **macOS** - Supported
+- ✅ **Linux** - Supported
 
-### Current Optimizations
+## 🎨 How Everything Connects
 
-**1. Widget Optimization:**
-- Use `const` constructors where possible
-- Prefer `StatelessWidget` over `StatefulWidget` when no state needed
-- Use `const` widgets to prevent unnecessary rebuilds
-
-**2. State Management:**
-- Provider only notifies when state actually changes
-- Local state used for UI-only changes (avoiding global rebuilds)
-
-**3. Image Handling:**
-- Images loaded as `MemoryImage` for better performance
-- Image quality reduced (85%) and max width (1200px) for optimization
-- Lazy loading for lists (using `ListView.builder`)
-
-**4. Responsive Design:**
-- `isSmallScreen` flag for conditional rendering
-- Dynamic font sizes and padding based on screen width
-- `MediaQuery` used for screen size detection
-
-**5. Build Optimizations:**
-- Release builds use tree-shaking and minification
-- Debug builds include hot reload for faster development
-
-### Performance Considerations
-
-**Areas for Improvement:**
-- Implement image caching for network images
-- Add pagination for large lists
-- Use `FutureBuilder` and `StreamBuilder` efficiently
-- Consider code splitting for web builds
-- Implement lazy loading for images in lists
-
-## 🚀 Future Improvements
-
-### Planned Features
-
-**1. Backend Integration:**
-- REST API or GraphQL integration
-- Real-time updates using WebSockets
-- User authentication with JWT tokens
-- Cloud storage for media files
-
-**2. Enhanced Features:**
-- Real-time notifications
-- Push notifications
-- Advanced search with filters
-- User following/followers system
-- Thread/bookmark saving
-- Rich text editor for posts
-- Image editing capabilities
-
-**3. State Management Enhancements:**
-- Additional providers for:
-  - User data management
-  - Thread/post state
-  - Notification state
-  - Space management
-- State persistence for offline support
-
-**4. Performance Improvements:**
-- Implement image caching
-- Add pagination for infinite scroll
-- Optimize bundle size
-- Implement code splitting for web
-- Add performance monitoring
-
-**5. Testing:**
-- Unit tests for business logic
-- Widget tests for UI components
-- Integration tests for user flows
-- E2E tests for critical paths
-
-**6. Developer Experience:**
-- Add comprehensive documentation
-- Create component storybook
-- Add code generation for boilerplate
-- Implement CI/CD pipeline
-
-**7. Accessibility:**
-- Screen reader support
-- Keyboard navigation
-- High contrast mode
-- Font size scaling
-
-**8. Internationalization:**
-- Multi-language support
-- Locale-specific formatting
-- RTL language support
-
-### Technical Debt
-
-**Areas to Address:**
-- Refactor duplicate code in components
-- Standardize error handling
-- Implement consistent loading states
-- Add comprehensive error boundaries
-- Improve type safety (avoid `dynamic` types where possible)
-
-## 📚 Additional Resources
-
-### File Structure Reference
+### Example: Viewing a Thread
 
 ```
-lib/
-├── main.dart              # App entry, provider initialization
-├── app.dart               # MaterialApp with theme and router
-├── app_router.dart        # Route definitions
-│
-├── components/           # Reusable UI components
-│   ├── navigation/       # Navigation components
-│   ├── content/         # Content display components
-│   ├── input/           # Input components
-│   └── modals/          # Modal dialogs
-│
-├── pages/                # Full-screen pages
-│   ├── auth/            # Authentication pages
-│   ├── main/            # Main app pages
-│   └── detail/          # Detail view pages
-│
-├── contexts/             # State management providers
-│   └── dark_mode_context.dart
-│
-└── theme/                # Theme configuration
-    └── app_theme.dart
+1. User is on HomePage
+   ↓
+2. HomePage shows list of ThreadCard components
+   ↓
+3. User taps a ThreadCard
+   ↓
+4. ThreadCard's onTap calls: context.push('/thread/123')
+   ↓
+5. Router finds '/thread/:threadId' route
+   ↓
+6. Router creates ThreadPage with threadId = '123'
+   ↓
+7. ThreadPage loads thread data
+   ↓
+8. ThreadPage uses CommentCard components to show comments
+   ↓
+9. User can comment using CommentInput component
+   ↓
+10. CommentInput submits, ThreadPage updates
 ```
 
-### Key Design Decisions
+### Example: Creating a Post
 
-1. **Provider over Redux/Bloc**: Simpler state management for current needs
-2. **go_router over Navigator**: Declarative routing with better type safety
-3. **Component-based architecture**: Reusability and maintainability
-4. **Material Design 3**: Modern, consistent UI design
-5. **Responsive-first**: Mobile-first design with desktop support
+```
+1. User on HomePage taps "Create Post"
+   ↓
+2. HomePage shows QuickPostComposer component
+   ↓
+3. User fills form (title, content, category, maybe image)
+   ↓
+4. User taps "Post" button
+   ↓
+5. QuickPostComposer's onSubmit callback runs
+   ↓
+6. Data sent to HomePage
+   ↓
+7. HomePage adds new post to list
+   ↓
+8. HomePage rebuilds, showing new post
+```
+
+## 💡 Key Concepts for New Developers
+
+### 1. Widget Tree
+Everything in Flutter is a widget. Pages are widgets, components are widgets, even text is a widget. They're nested like a tree.
+
+### 2. Stateful vs Stateless
+- **StatelessWidget** - Doesn't change (like a static image)
+- **StatefulWidget** - Can change (like a form with input)
+
+### 3. Build Method
+Every widget has a `build()` method that returns what to show on screen. Flutter calls this when it needs to display the widget.
+
+### 4. Context
+`context` is like a reference to where you are in the widget tree. You use it for:
+- Navigation: `context.push('/route')`
+- Getting providers: `Provider.of<Type>(context)`
+- Getting theme: `Theme.of(context)`
+
+### 5. setState
+When you change data in a StatefulWidget, call `setState()` to tell Flutter to rebuild the widget.
+
+```dart
+setState(() {
+  selectedCategory = 'New Category';  // Change data
+  // Flutter will rebuild this widget
+});
+```
+
+## 🚀 Common Patterns
+
+### Pattern 1: List of Items
+```dart
+ListView.builder(
+  itemCount: items.length,
+  itemBuilder: (context, index) {
+    return ItemCard(item: items[index]);
+  },
+)
+```
+
+### Pattern 2: Conditional Rendering
+```dart
+if (isLoading)
+  CircularProgressIndicator()
+else
+  ContentWidget()
+```
+
+### Pattern 3: Navigation with Data
+```dart
+// Pass data through route
+context.push('/user/$username');
+
+// Or use query parameters
+context.push('/search?q=$searchTerm');
+```
+
+## 📚 Where to Start
+
+**New to the codebase? Start here:**
+
+1. **Read `main.dart`** - See how the app starts
+2. **Read `app_router.dart`** - See all the routes
+3. **Pick a simple page** - Like `splash_page.dart`
+4. **See how it uses components** - Check what components it imports
+5. **Follow the flow** - See how user actions trigger navigation
+
+**Want to add a feature?**
+
+1. Create the page in `lib/pages/`
+2. Add route in `app_router.dart`
+3. Create components in `lib/components/` if needed
+4. Connect everything with navigation
 
 ---
 
 **Document Version**: 1.0  
 **Last Updated**: 2024  
-**Maintained by**: Development Team
-
+**For**: New developers joining the project
